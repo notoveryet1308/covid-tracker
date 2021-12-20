@@ -1,0 +1,11 @@
+.Main-header{
+  width: 100%;
+  position: relative;
+}
+
+.Main-header__title{
+  width: 100%;
+  padding: .5rem 0;
+  border-bottom: 2px solid #e1e1e1;
+}
+

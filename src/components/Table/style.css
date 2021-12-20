@@ -1,0 +1,23 @@
+.table{
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, calc(100% / 6));
+  grid-template-rows: 4rem auto;
+  overflow-x:  auto;
+  min-width: max-content;
+}
+.table-cell{
+  border: 2px solid #d4b0e9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 2rem;
+  padding: 1rem;
+}
+.table-cell p{
+  font-size: 1.4rem;
+}
+.table-cell p::first-letter{
+  text-transform: capitalize;
+}

@@ -1,0 +1,65 @@
+.Card{
+  position: relative;
+  border: 1px solid rgb(238, 201, 201);
+  padding: 1rem;
+  border-radius: 2px;
+  min-width: 20rem;
+  cursor: pointer;
+  
+}
+.Card__info{
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 3rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Card__info--districtBtn{
+  position: relative;
+  border: none;
+  height: 3rem;
+  padding: 0 1rem;
+  cursor: pointer;
+  transition: all 300ms ease;
+  /* z-index: 222; */
+}
+
+.Card__info--districtBtn:hover{
+  background-color: rgb(241, 219, 219);
+}
+
+.Card__data{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding: .5rem 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.Card__data .side-btn{
+  font-size: 1.6rem;
+  cursor: pointer;
+  background-color: rgba(165, 42, 42, 0.301);
+  display: inline;
+  position: absolute;
+  top: 50%;
+  padding:.2rem 1rem;
+  border-radius: 50%;
+}
+
+.goLeft{
+  left: 0;
+  transform: translateY(-50%);
+}
+.goRight{
+  right: 0;
+  transform: translateY(-50%);
+}

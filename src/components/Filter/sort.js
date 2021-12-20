@@ -3,8 +3,8 @@ import { DataContext } from '../../context/DataProvider'
 
 import './style.css'
 
-export default function Sort({ options = [] }) {
-	const { setActiveSort } = useContext(DataContext)
+export default function Sort({ options = [], handleFilter }) {
+	// const { setActiveSort } = useContext(DataContext)
 	const [showDropdown, setShowDropdown] = useState(false)
 	const [order, setOrder] = useState({ ascend: false, decend: false })
 	return (
@@ -26,7 +26,7 @@ export default function Sort({ options = [] }) {
 										setShowDropdown(false)
 
 										if (e.target.className.includes('Ascend')) {
-											setActiveSort({
+											handleFilter('sort', {
 												ascend: true,
 												decend: false,
 												label: option.label.toLowerCase(),
@@ -34,7 +34,7 @@ export default function Sort({ options = [] }) {
 											setOrder({ ascend: true, decend: false })
 										}
 										if (e.target.className.includes('Decend')) {
-											setActiveSort({
+											handleFilter('sort', {
 												decend: true,
 												ascend: false,
 												label: option.label.toLowerCase(),

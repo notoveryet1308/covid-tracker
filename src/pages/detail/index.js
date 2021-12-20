@@ -6,40 +6,42 @@ import { DataContext } from '../../context/DataProvider'
 import './style.css'
 import Table from '../../components/Table'
 import Loader from '../../components/Loader'
+import {processTableData, getFilterDateData, sortTableData} from './function'
+ 
 
-const processTableData = (dates = {}) => {
-	const processedData = []
-	const keys = Object.keys(dates)
-	keys.length > 0 &&
-		keys.forEach((el) => {
-			const date = el
-			const data = dates[el]
-			const recovered = data?.total?.recovered || 0
-			const confirmed = data?.total?.confirmed || 0
-			const deceased = data?.total?.deceased || 0
-			const delta = data?.delta || {}
-			const delta7 = data?.delta7 || {}
-
-			processedData.push({
-				date,
-				recovered,
-				confirmed,
-				deceased,
-				delta,
-				'delta 7': delta7,
-			})
-		})
-
-	return processedData
-}
 const config = {
 	headCols: ['date', 'confirmed', 'recovered', 'deceased', 'delta', 'delta 7'],
 }
 export default function Detail() {
 	const { stateName, stateCode } = useParams()
 	const { timeSeriesData } = useContext(DataContext)
+	const [dataToDisplay, setDataToDisplay] = useState(null)
+	const [filterValue, setFilterValue] = useState(null)
+	const handleFilter = (id, data) => {
+		setFilterValue({ [id]: data })
+	}
 
+	useEffect(() => {
+		const id = filterValue && Object.keys(filterValue)[0]
+		if (id === 'date') {
+			const filteredData = getFilterDateData(
+				timeSeriesData[stateCode]['dates'],
+				filterValue[id],
+			)
+			setDataToDisplay(filteredData)
+		}
+		if (id === 'sort') {
+			const source = processTableData(timeSeriesData[stateCode]['dates'])
+			const sortedData = sortTableData(source, filterValue[id])
+			setDataToDisplay(sortedData)
+		}
+	}, [filterValue])
 
+	useEffect(() => {
+		if (timeSeriesData) {
+			setDataToDisplay(processTableData(timeSeriesData[stateCode]['dates']))
+		}
+	}, [stateCode, timeSeriesData])
 
 	if (!timeSeriesData) {
 		return <Loader />
@@ -49,17 +51,14 @@ export default function Detail() {
 			<div className='detail'>
 				<div className='page-filter'>
 					<h3>{stateName.split('-').join(' ')}</h3>
-					{/* <Filter
+					<Filter
 						search={false}
 						sortOptions={[{ label: 'Confirmed' }]}
-						
-					/> */}
+						handleFilter={handleFilter}
+					/>
 				</div>
 				<main className='detail__main'>
-					<Table
-						config={config}
-						data={processTableData(timeSeriesData[stateCode]['dates'])}
-					/>
+					{dataToDisplay && <Table config={config} data={dataToDisplay} />}
 				</main>
 			</div>
 		</Container>

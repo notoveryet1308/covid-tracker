@@ -7,37 +7,43 @@ import { Container } from '../../components/layout'
 import Loader from '../../components/Loader'
 import NoData from '../../components/NoData'
 import Filter from '../../components/Filter'
+import { getDateData, getSearchData, sortData } from './function'
 
 export default function Home() {
-	const { minData, searchData, dateData, sortedData, activeSort } =
-		useContext(DataContext)
+	const { minData, timeSeriesData } = useContext(DataContext)
 	const [districtData, setDistrictData] = useState(null)
 	const showDistrictData = (code) => {
 		const data = minData[code].districts
 		setDistrictData(data)
 	}
 	const [dataToDisplay, setDataToDisplay] = useState(null)
+	const [filterValue, setFilterValue] = useState(null)
+	const handleFilter = (id, data) => {
+		setFilterValue({ [id]: data })
+	}
 
 	useEffect(() => {
-		console.log({ len: Object.keys(sortedData).length })
-		if (activeSort.label && Object.keys(sortedData).length > 0) {
-			setDataToDisplay(sortedData)
-		} else if (searchData.isActive) {
-			setDataToDisplay(searchData.data || {})
-		} else if (dateData.isActive) {
-			setDataToDisplay(dateData.data || {})
-		} else {
-			setDataToDisplay(minData)
+		const id = filterValue && Object.keys(filterValue)[0]
+		if (timeSeriesData && minData) {
+			if (id === 'date') {
+				const dateData = getDateData(filterValue[id], timeSeriesData)
+				setDataToDisplay(dateData)
+			}
+
+			if (id === 'search') {
+				const searchData = getSearchData(filterValue[id], minData)
+				setDataToDisplay(searchData)
+			}
+			if (id === 'sort') {
+				const sortedData = sortData(filterValue[id], minData)
+				setDataToDisplay(sortedData)
+			}
 		}
-	}, [
-		minData,
-		searchData.data,
-		dateData.data,
-		searchData.isActive,
-		dateData.isActive,
-		activeSort.label,
-		sortedData,
-	])
+	}, [filterValue])
+
+	useEffect(() => {
+		setDataToDisplay(minData)
+	}, [minData])
 
 	if (!dataToDisplay) {
 		return <Loader />
@@ -47,7 +53,10 @@ export default function Home() {
 		<Container>
 			<div className='page-filter'>
 				<h3>STATES</h3>
-				<Filter sortOptions={[{ label: 'Confirmed' }]} />
+				<Filter
+					sortOptions={[{ label: 'Confirmed' }]}
+					handleFilter={handleFilter}
+				/>
 			</div>
 			{dataToDisplay && Object.keys(dataToDisplay).length <= 0 && <NoData />}
 			{districtData && (

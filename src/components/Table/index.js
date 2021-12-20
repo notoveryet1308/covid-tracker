@@ -1,7 +1,6 @@
 import './style.css'
 
 export default function Table({ config = [], data = [] }) {
-	console.log({ data })
 	return (
 		<div className='table'>
 			{config.headCols.map((el, index) => (
@@ -12,6 +11,7 @@ export default function Table({ config = [], data = [] }) {
 			{data.map((el) => {
 				return config.headCols.map((d) => (
 					<TableCellGen
+					 
 						id={d}
 						source={el}
 						subConfig={['confirmed', 'recovered', 'deceased']}

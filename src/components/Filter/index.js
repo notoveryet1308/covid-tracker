@@ -1,63 +1,35 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { DataContext } from '../../context/DataProvider'
+import React, { useState } from 'react'
 import { debounce } from '../../utils/functions'
-import { getSearchData, getDateData } from './function'
+
 import Sort from './sort'
 
 import './style.css'
 
-const debounceSearch = debounce(getSearchData, 500)
+const debounceSearch = debounce((handleFn, id, data) => {
+	handleFn(id, data)
+}, 500)
 
-export default function Filter({ sortOptions, search = true }) {
-	const {
-		setSearchData,
-		setDateData,
-		minData,
-		timeSeriesData,
-		setActiveSort,
-		activeSort,
-	} = useContext(DataContext)
+export default function Filter({ sortOptions, search = true, handleFilter }) {
 	const [searchInput, setSearchInput] = useState('')
 	const [dateInput, setDateInput] = useState('')
 
 	const handleSearch = (e) => {
 		const value = e.target.value
 		setSearchInput(value)
-		if (dateInput) {
-			setDateData({ isActive: false, data: null })
-			setDateInput('')
-		}
-		if (activeSort.label) {
-			console.log('did update')
-			setActiveSort({ label: null, ascend: null, decend: null })
-		}
+		debounceSearch(handleFilter, e.target.id, value)
 	}
 
 	const handleDate = (e) => {
 		const date = e.target.value
 		setDateInput(date)
-		if (searchInput) {
-			setSearchData({ isActive: false, data: null })
-			setSearchInput('')
-		}
-		if (activeSort.label) {
-			console.log('did update')
-			setActiveSort({ label: null, ascend: null, decend: null })
-		}
+		handleFilter(e.target.id, date)
 	}
-
-	useEffect(() => {
-		minData && debounceSearch(searchInput, minData, setSearchData)
-	}, [minData, searchInput])
-
-	useEffect(() => {
-		timeSeriesData && getDateData(dateInput, timeSeriesData, setDateData)
-	}, [timeSeriesData, dateInput])
 
 	return (
 		<div className='filter'>
 			{search && (
 				<input
+					id='search'
 					type='text'
 					onChange={handleSearch}
 					value={searchInput}
@@ -65,7 +37,7 @@ export default function Filter({ sortOptions, search = true }) {
 				/>
 			)}
 			<input type='date' id='date' onChange={handleDate} value={dateInput} />
-			<Sort options={sortOptions} />
+			<Sort options={sortOptions} handleFilter={handleFilter} />
 		</div>
 	)
 }
